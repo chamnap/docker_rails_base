@@ -1,10 +1,9 @@
 FROM ruby:2.6.6-alpine3.11
 
 ENV BUILD_PACKAGES="curl-dev ruby-dev build-base bash git less" \
-    DEV_PACKAGES="zlib-dev libxml2-dev libxslt-dev pcre-dev libffi-dev tzdata yaml-dev imagemagick wkhtmltopdf" \
+    DEV_PACKAGES="zlib-dev libxml2-dev libxslt-dev pcre-dev libffi-dev tzdata yaml-dev imagemagick" \
     DB_PACKAGES="postgresql-dev postgresql-client" \
-    RUBY_PACKAGES="ruby-json yaml nodejs yarn ruby-nokogiri" \
-    FONT_PACKAGES="freetype ttf-freefont ttf-opensans ttf-ubuntu-font-family"
+    RUBY_PACKAGES="ruby-json yaml nodejs yarn ruby-nokogiri"
 
 # Update and install base packages
 RUN apk update && \
@@ -13,9 +12,17 @@ RUN apk update && \
     $BUILD_PACKAGES \
     $DEV_PACKAGES \
     $DB_PACKAGES \
-    $RUBY_PACKAGES \
-    $FONT_PACKAGES && \
+    $RUBY_PACKAGES && \
     rm -rf /var/cache/apk/*
+
+# wkhtmltopdf with patched qt
+# https://github.com/madnight/docker-alpine-wkhtmltopdf/blob/master/Dockerfile
+RUN apk add --update --no-cache \
+    libgcc libstdc++ libx11 glib libxrender libxext libintl \
+    freetype ttf-dejavu ttf-droid ttf-freefont ttf-liberation ttf-ubuntu-font-family
+
+COPY --from=madnight/alpine-wkhtmltopdf-builder:0.12.5-alpine3.10-729373503 \
+    /bin/wkhtmltopdf /usr/bin/wkhtmltopdf
 
 RUN addgroup -S deployer -g 1000 && adduser -S -g '' -u 1000 -G deployer deployer
 
