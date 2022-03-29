@@ -24,6 +24,21 @@ RUN apk add --update --no-cache \
 COPY --from=madnight/alpine-wkhtmltopdf-builder:0.12.5-alpine3.10-729373503 \
     /bin/wkhtmltopdf /usr/bin/wkhtmltopdf
 
+# https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md#running-on-alpine
+RUN apk add --no-cache \
+      chromium \
+      nss \
+      freetype \
+      harfbuzz \
+      ca-certificates \
+      ttf-freefont \
+      nodejs \
+      yarn
+
+# Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
 RUN addgroup -S deployer -g 1000 && adduser -S -g '' -u 1000 -G deployer deployer
 
 ENV APP_PATH=/app \
@@ -50,5 +65,7 @@ RUN chown -R deployer:deployer $BUNDLE_PATH \
   && chown -R deployer:deployer $TEMP_PATH \
   && chown -R deployer:deployer $NODE_MODULES_PATH \
   && chown -R deployer:deployer $PUBLIC_PATH
+
+USER deployer:deployer
 
 RUN gem install bundler --no-document

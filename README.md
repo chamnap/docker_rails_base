@@ -7,6 +7,10 @@
 
 # Build
 
+    $ docker build -t rails_base -f 2.7.3-alpine3.13-prod.Dockerfile --no-cache .
+    $ docker tag rails_base chamnapchhorn/rails_base:2.7.3-alpine3.13-prod
+    $ docker push chamnapchhorn/rails_base:2.7.3-alpine3.13-prod
+
     $ docker build -t rails_base -f 2.7.3-alpine3.13-dev.Dockerfile --no-cache .
     $ docker tag rails_base chamnapchhorn/rails_base:2.7.3-alpine3.13-dev
     $ docker push chamnapchhorn/rails_base:2.7.3-alpine3.13-dev

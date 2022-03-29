@@ -1,5 +1,7 @@
 FROM chamnapchhorn/rails_base:2.6.6-alpine3.11-prod
 
+USER root
+
 # Unset some ENVs for dev
 ENV BUNDLE_WITHOUT='' \
     BUNDLE_DEPLOYMENT='' \
